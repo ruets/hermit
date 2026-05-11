@@ -5,8 +5,9 @@ import (
 )
 
 var cleanCmd = &cobra.Command{
-	Use:   "clean",
-	Short: "Remove plaintext secrets, keep encrypted .age files",
+	Use:     "clean",
+	GroupID: "encryption",
+	Short:   "Remove plaintext secrets, keep encrypted .age files",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		m, err := newManager()
 		if err != nil {

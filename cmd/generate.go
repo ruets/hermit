@@ -5,8 +5,9 @@ import (
 )
 
 var generateCmd = &cobra.Command{
-	Use:   "generate",
-	Short: "Generate all missing secrets",
+	Use:     "generate",
+	GroupID: "management",
+	Short:   "Generate all missing secrets",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		m, err := newManager()
 		if err != nil {

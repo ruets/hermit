@@ -5,8 +5,9 @@ import (
 )
 
 var unwrapCmd = &cobra.Command{
-	Use:   "unwrap",
-	Short: "Decrypt all secrets to plaintext",
+	Use:     "unwrap",
+	GroupID: "encryption",
+	Short:   "Decrypt all secrets to plaintext",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		m, err := newManager()
 		if err != nil {

@@ -5,8 +5,9 @@ import (
 )
 
 var wrapCmd = &cobra.Command{
-	Use:   "wrap",
-	Short: "Encrypt plaintext secrets marked as encrypted in config",
+	Use:     "wrap",
+	GroupID: "encryption",
+	Short:   "Encrypt plaintext secrets marked as encrypted in config",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		m, err := newManager()
 		if err != nil {

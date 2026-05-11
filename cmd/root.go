@@ -18,9 +18,9 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:           "hermit",
-	Short:         "A tool to manage your secrets from a config file",
-	SilenceUsage:  true,
+	Use:          "hermit",
+	Short:        "A tool to manage your secrets from a config file",
+	SilenceUsage: true,
 }
 
 func Execute() {
@@ -37,6 +37,16 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&configPath, "config", "c", "secrets.yaml", "path to secrets.yaml")
 	rootCmd.PersistentFlags().StringVarP(&secretsDir, "secrets-dir", "d", "secrets", "path to secrets directory")
 	rootCmd.PersistentFlags().StringVarP(&keyDir, "key-dir", "k", defaultKeyDir, "path to age key directory")
+	// Add command groups
+	rootCmd.AddGroup(&cobra.Group{
+		ID:    "management",
+		Title: "Management Commands:",
+	})
+	rootCmd.AddGroup(&cobra.Group{
+		ID:    "encryption",
+		Title: "Encryption Commands:",
+	})
+
 }
 
 func newManager() (*secrets.Manager, error) {

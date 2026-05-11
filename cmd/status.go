@@ -8,6 +8,7 @@ import (
 
 var statusCmd = &cobra.Command{
 	Use:   "status",
+	GroupID: "management",
 	Short: "List all secrets and their status",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		m, err := newManager()
