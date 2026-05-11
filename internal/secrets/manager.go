@@ -22,3 +22,17 @@ type SecretStatus struct {
 	Exists   bool
 }
 
+func (m *Manager) Generate() error {
+	for _, s := range m.cfg.Secrets {
+		if Exists(s.Name, m.secretsDir) {
+			fmt.Printf("  ~ skipped   %s\n", s.Name)
+			continue
+		}
+		if err := Generate(s.Name, s.Type, m.secretsDir); err != nil {
+			return fmt.Errorf("failed to generate %s: %w", s.Name, err)
+		}
+		fmt.Printf("  ✓ generated %s\n", s.Name)
+	}
+	return nil
+}
+
