@@ -28,3 +28,34 @@ func Exists(name, secretsDir string) bool {
 	info, err := os.Stat(path)
 	return err == nil && info.Size() > 0
 }
+
+func ExistsEncrypted(name, secretType, secretsDir string) bool {
+	path := filepath.Join(secretsDir, name)
+	agePath := path + ".age"
+
+	// Check if main encrypted file exists
+	info, err := os.Stat(agePath)
+	if err != nil || info.Size() == 0 {
+		return false
+	}
+
+	// For RSA keys, also check for .pub.age
+	if secretType == "rsa" {
+		pubAgePath := path + ".pub.age"
+		pubInfo, err := os.Stat(pubAgePath)
+		if err != nil || pubInfo.Size() == 0 {
+			return false
+		}
+	}
+
+	return true
+}
+
+// ExistsSecret checks if a secret exists in either encrypted or plaintext form
+// based on the encrypted flag
+func ExistsSecret(name, secretType string, secretsDir string, encrypted bool) bool {
+	if encrypted {
+		return ExistsEncrypted(name, secretType, secretsDir)
+	}
+	return Exists(name, secretsDir)
+}
