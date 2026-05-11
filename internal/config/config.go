@@ -9,7 +9,7 @@ import (
 type Secret struct {
 	Name     string   `yaml:"name"`
 	Type     string   `yaml:"type"`
-	Services []string `yaml:"services"`
+	Notes    string   `yaml:"notes"`
 }
 
 type Config struct {

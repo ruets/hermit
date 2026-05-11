@@ -18,8 +18,21 @@ func NewManager(cfg *config.Config, secretsDir string) *Manager {
 type SecretStatus struct {
 	Name     string
 	Type     string
-	Services []string
+	Notes    string
 	Exists   bool
+}
+
+func (m *Manager) Status() []SecretStatus {
+	statuses := make([]SecretStatus, len(m.cfg.Secrets))
+	for i, s := range m.cfg.Secrets {
+		statuses[i] = SecretStatus{
+			Name:     s.Name,
+			Type:     s.Type,
+			Notes:    s.Notes,
+			Exists:   Exists(s.Name, m.secretsDir),
+		}
+	}
+	return statuses
 }
 
 func (m *Manager) Generate() error {
@@ -35,4 +48,3 @@ func (m *Manager) Generate() error {
 	}
 	return nil
 }
-
