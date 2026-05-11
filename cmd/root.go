@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/ruets/hermit/internal/config"
+	"github.com/ruets/hermit/internal/secrets"
 	"github.com/spf13/cobra"
 )
 
@@ -29,3 +31,10 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&secretsDir, "secrets-dir", "d", "secrets", "path to secrets directory")
 }
 
+func newManager() (*secrets.Manager, error) {
+	cfg, err := config.Load(configPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load config: %w", err)
+	}
+	return secrets.NewManager(cfg, secretsDir), nil
+}
