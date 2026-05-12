@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/ruets/hermit/internal/secrets"
 	"github.com/spf13/cobra"
 )
 
@@ -11,7 +12,7 @@ var statusCmd = &cobra.Command{
 	GroupID: "management",
 	Short: "List all secrets and their status",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		m, err := newManager()
+		m, err := secrets.NewManager(configPath, keyPath)
 		if err != nil {
 			return err
 		}

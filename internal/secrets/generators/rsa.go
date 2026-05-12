@@ -21,14 +21,5 @@ func (g *RSAGenerator) Generate(path string) error {
 		Bytes: x509.MarshalPKCS1PrivateKey(key),
 	})
 
-	pubPEM := pem.EncodeToMemory(&pem.Block{
-		Type:  "PUBLIC KEY",
-		Bytes: x509.MarshalPKCS1PublicKey(&key.PublicKey),
-	})
-
-	if err := writeSecret(path, string(privPEM)); err != nil {
-		return err
-	}
-
-	return writeSecret(path+".pub", string(pubPEM))
+	return writeSecret(path, string(privPEM))
 }

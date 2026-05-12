@@ -9,15 +9,9 @@ import (
 	"filippo.io/age"
 )
 
-const keyFile = "hermit.key"
-
-func KeyPath(configDir string) string {
-	return filepath.Join(configDir, keyFile)
-}
-
-func GenerateKey(configDir string) (*age.X25519Identity, error) {
-	if err := os.MkdirAll(configDir, 0700); err != nil {
-		return nil, fmt.Errorf("failed to create config dir: %w", err)
+func GenerateKey(keyPath string) (*age.X25519Identity, error) {
+	if err := os.MkdirAll(filepath.Dir(keyPath), 0700); err != nil {
+		return nil, fmt.Errorf("failed to create key directory: %w", err)
 	}
 
 	identity, err := age.GenerateX25519Identity()
@@ -25,19 +19,17 @@ func GenerateKey(configDir string) (*age.X25519Identity, error) {
 		return nil, fmt.Errorf("failed to generate age key: %w", err)
 	}
 
-	path := KeyPath(configDir)
-	if err := os.WriteFile(path, []byte(identity.String()+"\n"), 0600); err != nil {
+	if err := os.WriteFile(keyPath, []byte(identity.String()+"\n"), 0600); err != nil {
 		return nil, fmt.Errorf("failed to write key: %w", err)
 	}
 
 	return identity, nil
 }
 
-func LoadKey(configDir string) (*age.X25519Identity, error) {
-	path := KeyPath(configDir)
-	data, err := os.ReadFile(path)
+func LoadKey(keyPath string) (*age.X25519Identity, error) {
+	data, err := os.ReadFile(keyPath)
 	if err != nil {
-		return nil, fmt.Errorf("key not found at %s: %w", path, err)
+		return nil, fmt.Errorf("key not found at %s: %w", keyPath, err)
 	}
 
 	identities, err := age.ParseIdentities(bytes.NewReader(data))

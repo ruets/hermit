@@ -1,15 +1,16 @@
 package cmd
 
 import (
+	"github.com/ruets/hermit/internal/secrets"
 	"github.com/spf13/cobra"
 )
 
 var cleanCmd = &cobra.Command{
 	Use:     "clean",
-	GroupID: "encryption",
-	Short:   "Remove plaintext secrets, keep encrypted .age files",
+	GroupID: "management",
+	Short:   "Remove orphaned secrets with confirmation",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		m, err := newManager()
+		m, err := secrets.NewManager(configPath, keyPath)
 		if err != nil {
 			return err
 		}

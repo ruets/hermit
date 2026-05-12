@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/ruets/hermit/internal/secrets"
 	"github.com/spf13/cobra"
 )
 
@@ -9,7 +10,7 @@ var generateCmd = &cobra.Command{
 	GroupID: "management",
 	Short:   "Generate all missing secrets",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		m, err := newManager()
+		m, err := secrets.NewManager(configPath, keyPath)
 		if err != nil {
 			return err
 		}
