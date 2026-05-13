@@ -347,5 +347,10 @@ func (m *Manager) Wrap() error {
 		}
 	}
 
+	// Try to remove .secrets/ directory if empty
+	if err := os.Remove(tempSecretsDir); err == nil {
+		fmt.Println("  ✓ removed .secrets/ (empty)")
+	}
+
 	return nil
 }
