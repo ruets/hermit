@@ -107,14 +107,19 @@ cmd/
 
 `secrets.yaml` format:
 ```yaml
+key_path: ~/.config/hermit/hermit.key   # Optional, path to age encryption key
+
 secrets:
-  - name: authelia/jwt_secret    # Secret name (directory structure supported)
-    type: random_hex             # Type: random_hex, rsa, manual, or custom
-    notes: authelia              # Optional comma-separated tags
-    encrypted: true              # Optional, defaults to true
+  - name: authelia/jwt_secret       # Secret name (directory structure supported)
+    type: random_hex                # Type: random_hex, rsa, manual, or custom
+    notes: authelia                 # Optional comma-separated tags
+    encrypted: true                 # Optional, defaults to true
 ```
 
-Available types:
+**YAML Configuration**:
+- `key_path` (optional): Path to age encryption key. Takes priority over CLI flag if set.
+
+Available secret types:
 - `random_hex`: Generate random hexadecimal string
 - `rsa`: Generate RSA private/public key pair
 - `manual`: User provides the secret value interactively
@@ -133,6 +138,8 @@ hermit [command] \
 - `secretsDir` = `{configDir}/secrets/` (encrypted secrets)
 - `.secrets/` = `{configDir}/.secrets/` (temporary plaintext for user editing)
 - The `--secrets-dir` flag is intentionally removed to ensure paths are predictable
+
+**Key Path Priority**: If `key_path` is set in `secrets.yaml`, it overrides the `--key-path` CLI flag. This allows different `secrets.yaml` files (e.g., across projects) to use different age keys.
 
 ## Important Implementation Notes
 

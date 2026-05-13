@@ -108,6 +108,8 @@ go build -o hermit .
 Create a `secrets.yaml` file in your config directory or use `hermit init` to generate a default one:
 
 ```yaml
+key_path: ~/.config/hermit/hermit.key   # Optional, path to age key
+
 secrets:
   - name: authelia/jwt_secret
     type: random_hex
@@ -124,6 +126,12 @@ secrets:
 
 ### Configuration Options
 
+You can configure hermit via:
+
+**YAML config file** (`secrets.yaml`):
+- `key_path`: Path to age encryption key (optional, overrides CLI flag if set)
+
+**CLI flags**:
 ```bash
 hermit [command] \
   --config path/to/secrets.yaml \
@@ -132,6 +140,8 @@ hermit [command] \
 
 - `--config`: Path to `secrets.yaml` (default: `./secrets.yaml`)
 - `--key-path`: Path to age key (default: `~/.config/hermit/hermit.key`)
+
+**Priority**: If `key_path` is set in `secrets.yaml`, it takes priority over the `--key-path` flag.
 
 Secrets are always stored alongside the config file:
 

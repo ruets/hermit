@@ -14,7 +14,7 @@ type Secret struct {
 }
 
 type Config struct {
-	KeyDir  string   `yaml:"key_dir"`  // optional, defaults to ~/.config/hermit
+	KeyPath string   `yaml:"key_path"` // optional, defaults to ~/.config/hermit/hermit.key
 	Secrets []Secret `yaml:"secrets"`
 }
 

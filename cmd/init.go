@@ -20,7 +20,11 @@ var initCmd = &cobra.Command{
 		}
 
 		// Create secrets.yaml
-		exampleConfig := `secrets:
+		exampleConfig := `# Optional: specify the age encryption key path
+# If not specified, defaults to ~/.config/hermit/hermit.key
+# key_path: ./hermit.key
+
+secrets:
   # Random hex secrets (tokens, API keys, etc.)
   - name: random_hex_example
     type: random_hex

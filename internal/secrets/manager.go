@@ -31,8 +31,11 @@ func NewManager(configPath, keyPath string) (*Manager, error) {
 	configDir := filepath.Dir(configPath)
 	secretsDir := filepath.Join(configDir, "secrets")
 
-	// Resolve keyPath
+	// Resolve keyPath: cfg.KeyPath takes priority, then fall back to keyPath parameter
 	resolvedKeyPath := keyPath
+	if cfg.KeyPath != "" {
+		resolvedKeyPath = cfg.KeyPath
+	}
 	if len(resolvedKeyPath) > 0 && resolvedKeyPath[0] == '~' {
 		homeDir, _ := os.UserHomeDir()
 		resolvedKeyPath = filepath.Join(homeDir, resolvedKeyPath[1:])
