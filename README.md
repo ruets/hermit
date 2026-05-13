@@ -201,6 +201,25 @@ hermit wrap
 
 Re-encrypts secrets, save modified secrets and removes plaintext versions
 
+#### Changing Encryption Format
+
+To change whether a secret is encrypted (`encrypted: true/false` in `secrets.yaml`):
+
+1. Run `hermit unwrap` (ensure secrets are decrypted to `.secrets/`)
+2. Update `secrets.yaml` with the new encryption setting
+3. Run `hermit wrap` (detects the format change and re-encrypts)
+4. Run `hermit clean` (removes backup files left by wrap)
+
+Example:
+
+```bash
+# Before: encrypted: false → After: encrypted: true
+hermit unwrap  # Decrypt secrets first
+# Edit secrets.yaml to change encryption setting
+hermit wrap    # Re-encodes secret to encrypted format
+hermit clean   # Removes plaintext backup files
+```
+
 ### `clean`
 
 ```bash

@@ -34,8 +34,9 @@ The hermit workflow has 5 steps:
    - For RSA keys, generates private key (public key derived on-the-fly during unwrap)
 
 2. **Unwrap** (`hermit unwrap`)
-   - Decrypts encrypted secrets from `secretsDir` to `.secrets/` (plaintext)
-   - Generates RSA public keys on-the-fly from private keys
+   - For encrypted secrets: Decrypts from `secretsDir` to `.secrets/` (plaintext)
+   - For plaintext secrets: Copies from `secretsDir` to `.secrets/`
+   - Generates RSA public keys on-the-fly from private keys (for both encrypted and plaintext RSA secrets)
    - Used before user modifications
 
 3. **User Edits** (manual)
@@ -171,6 +172,21 @@ When saving modified secrets:
 - Existing file is renamed to `.bak` (backup)
 - New content is written
 - No automatic cleanup of `.bak` files
+
+Backup files can be cleaned up using `hermit clean` which detects `.bak` files as orphaned.
+
+### Changing Encryption Format
+
+To change whether a secret is encrypted (`encrypted: true/false`):
+
+1. Run `hermit unwrap` (decrypt/copy secrets to `.secrets/`)
+2. Update `secrets.yaml` with new encryption setting
+3. Run `hermit wrap` (detects format change, re-saves with new encoding)
+4. Run `hermit clean` (removes `.bak` files created by wrap)
+
+How it works:
+- When `wrap` re-saves a secret with different encryption setting, it leaves a `.bak` file
+- `clean` detects these `.bak` files as orphaned (not in `secrets.yaml`) and offers to delete them
 
 ### User Confirmation
 
