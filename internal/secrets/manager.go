@@ -2,8 +2,6 @@ package secrets
 
 import (
 	"bytes"
-	"crypto/x509"
-	"encoding/pem"
 	"fmt"
 	"io/fs"
 	"os"
@@ -180,12 +178,34 @@ func (m *Manager) Unwrap() error {
 	tempSecretsDir := filepath.Join(filepath.Dir(m.secretsDir), ".secrets")
 
 	for _, s := range m.cfg.Secrets {
-		// Skip non-encrypted secrets
+		path := filepath.Join(m.secretsDir, s.Name)
+
 		if !s.IsEncrypted() {
+			// Copy plaintext file to .secrets
+			if _, err := os.Stat(path); err == nil {
+				content, err := os.ReadFile(path)
+				if err != nil {
+					return fmt.Errorf("failed to read %s: %w", s.Name, err)
+				}
+
+				outPath := filepath.Join(tempSecretsDir, s.Name)
+				if err := os.WriteFile(outPath, content, 0o600); err != nil {
+					return fmt.Errorf("failed to write %s: %w", s.Name, err)
+				}
+				fmt.Printf("  ✓ copied %s → .secrets/\n", s.Name)
+
+				// Generate RSA public key if needed
+				if s.Type == "rsa" {
+					pubPath := filepath.Join(tempSecretsDir, s.Name+".pub")
+					if err := generateRSAPublicKey(s.Name, content, pubPath); err != nil {
+						return err
+					}
+					fmt.Printf("  ✓ generated %s.pub → .secrets/\n", s.Name)
+				}
+			}
 			continue
 		}
 
-		path := filepath.Join(m.secretsDir, s.Name)
 		agePath := path + ".age"
 
 		// Check if encrypted file exists
@@ -206,23 +226,9 @@ func (m *Manager) Unwrap() error {
 				return fmt.Errorf("failed to read private key: %w", err)
 			}
 
-			block, _ := pem.Decode(privPEM)
-			if block == nil {
-				return fmt.Errorf("failed to decode PEM for %s", s.Name)
-			}
-
-			privKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-			if err != nil {
-				return fmt.Errorf("failed to parse private key %s: %w", s.Name, err)
-			}
-
-			pubPEM := pem.EncodeToMemory(&pem.Block{
-				Type:  "PUBLIC KEY",
-				Bytes: x509.MarshalPKCS1PublicKey(&privKey.PublicKey),
-			})
-			outPubPath := filepath.Join(tempSecretsDir, s.Name+".pub")
-			if err := os.WriteFile(outPubPath, pubPEM, 0600); err != nil {
-				return fmt.Errorf("failed to decrypt %s.pub: %w", s.Name, err)
+			pubPath := filepath.Join(tempSecretsDir, s.Name+".pub")
+			if err := generateRSAPublicKey(s.Name, privPEM, pubPath); err != nil {
+				return err
 			}
 			fmt.Printf("  ✓ generated %s.pub → .secrets/\n", s.Name)
 		}

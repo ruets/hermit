@@ -2,6 +2,8 @@ package secrets
 
 import (
 	"bufio"
+	"crypto/x509"
+	"encoding/pem"
 	"fmt"
 	"os"
 	"strings"
@@ -36,4 +38,27 @@ func (m *Manager) writeWithBackup(path string, content []byte, encrypt bool) err
 		return os.WriteFile(path+".age", ciphertext, 0600)
 	}
 	return os.WriteFile(path, content, 0600)
+}
+
+// generateRSAPublicKey derives and writes the public key from private key bytes.
+func generateRSAPublicKey(secretName string, privKeyBytes []byte, publicKeyPath string) error {
+	block, _ := pem.Decode(privKeyBytes)
+	if block == nil {
+		return fmt.Errorf("failed to decode PEM for %s", secretName)
+	}
+
+	privKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		return fmt.Errorf("failed to parse private key %s: %w", secretName, err)
+	}
+
+	pubPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "PUBLIC KEY",
+		Bytes: x509.MarshalPKCS1PublicKey(&privKey.PublicKey),
+	})
+	if err := os.WriteFile(publicKeyPath, pubPEM, 0o600); err != nil {
+		return fmt.Errorf("failed to write public key for %s: %w", secretName, err)
+	}
+
+	return nil
 }
