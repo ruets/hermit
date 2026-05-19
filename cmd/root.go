@@ -10,12 +10,14 @@ import (
 var (
 	configPath string
 	keyPath    string
+	Version    = "dev"
 )
 
 var rootCmd = &cobra.Command{
 	Use:          "hermit",
 	Short:        "A tool to manage your secrets from a config file",
 	SilenceUsage: true,
+	Version:      Version,
 }
 
 func Execute() {
