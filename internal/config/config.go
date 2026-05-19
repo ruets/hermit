@@ -7,10 +7,10 @@ import (
 )
 
 type Secret struct {
-	Name     	string   `yaml:"name"`
-	Type     	string   `yaml:"type"`
-	Notes    	string   `yaml:"notes"`
-	Encrypted *bool    `yaml:"encrypted"` // nil = default to true
+	Name      string `yaml:"name"`
+	Type      string `yaml:"type"`
+	Notes     string `yaml:"notes"`
+	Encrypted *bool  `yaml:"encrypted"` // nil = default to true
 }
 
 type Config struct {
