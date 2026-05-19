@@ -19,7 +19,7 @@ func EncryptFile(identity *age.X25519Identity, path string) error {
 		return err
 	}
 
-	if err := os.WriteFile(path+".age", ciphertext, 0600); err != nil {
+	if err := os.WriteFile(path+".age", ciphertext, 0400); err != nil {
 		return fmt.Errorf("failed to write encrypted file: %w", err)
 	}
 
@@ -38,7 +38,7 @@ func DecryptFile(identity *age.X25519Identity, path string) error {
 	}
 
 	outPath := path[:len(path)-4] // supprime .age
-	return os.WriteFile(outPath, plaintext, 0600)
+	return os.WriteFile(outPath, plaintext, 0644)
 }
 
 func DecryptFileTo(identity *age.X25519Identity, path, outPath string) error {
@@ -56,5 +56,5 @@ func DecryptFileTo(identity *age.X25519Identity, path, outPath string) error {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
 
-	return os.WriteFile(outPath, plaintext, 0600)
+	return os.WriteFile(outPath, plaintext, 0644)
 }

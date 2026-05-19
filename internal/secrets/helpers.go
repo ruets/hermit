@@ -35,9 +35,9 @@ func (m *Manager) writeWithBackup(path string, content []byte, encrypt bool) err
 		if err != nil {
 			return fmt.Errorf("failed to encrypt: %w", err)
 		}
-		return os.WriteFile(path+".age", ciphertext, 0600)
+		return os.WriteFile(path+".age", ciphertext, 0400)
 	}
-	return os.WriteFile(path, content, 0600)
+	return os.WriteFile(path, content, 0644)
 }
 
 // generateRSAPublicKey derives and writes the public key from private key bytes.
@@ -56,7 +56,7 @@ func generateRSAPublicKey(secretName string, privKeyBytes []byte, publicKeyPath 
 		Type:  "PUBLIC KEY",
 		Bytes: x509.MarshalPKCS1PublicKey(&privKey.PublicKey),
 	})
-	if err := os.WriteFile(publicKeyPath, pubPEM, 0o600); err != nil {
+	if err := os.WriteFile(publicKeyPath, pubPEM, 0644); err != nil {
 		return fmt.Errorf("failed to write public key for %s: %w", secretName, err)
 	}
 
