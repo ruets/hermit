@@ -8,9 +8,9 @@ import (
 )
 
 var statusCmd = &cobra.Command{
-	Use:   "status",
+	Use:     "status",
 	GroupID: "management",
-	Short: "List all secrets and their status",
+	Short:   "List all secrets and their status",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		m, err := secrets.NewManager(configPath, keyPath)
 		if err != nil {
