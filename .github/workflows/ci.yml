@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [main, dev]
     tags: ["v*"]
   pull_request:
     branches: [main, dev]
@@ -15,10 +14,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
-          go-version: "1.21"
+          go-version: "stable"
       - run: go fmt ./...
       - run: go vet ./...
       - run: git diff --exit-code
@@ -38,10 +37,10 @@ jobs:
           - goos: darwin
             goarch: arm64
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
-          go-version: "1.21"
+          go-version: "stable"
       - name: Get version
         id: version
         run: |
@@ -51,27 +50,27 @@ jobs:
             VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "dev")
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-      - run: CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -ldflags "-X main.Version=${{ steps.version.outputs.version }}" -o hermit-${{ matrix.goos }}-${{ matrix.goarch }} .
-      - uses: actions/upload-artifact@v4
+      - run: CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -ldflags "-X main.Version=${{ steps.version.outputs.version }}" -o hermit-${{ steps.version.outputs.version }}-${{ matrix.goos }}-${{ matrix.goarch }} .
+      - uses: actions/upload-artifact@v7
         with:
-          name: hermit-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: hermit-${{ matrix.goos }}-${{ matrix.goarch }}
+          name: hermit-${{ steps.version.outputs.version }}-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: hermit-${{ steps.version.outputs.version }}-${{ matrix.goos }}-${{ matrix.goarch }}
 
   publish:
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: orhun/git-cliff-action@v3
+      - uses: orhun/git-cliff-action@v4
         id: git-cliff
         with:
           config: .cliff.toml
           args: --latest --strip header
-      - uses: actions/download-artifact@v4
-      - uses: softprops/action-gh-release@v2
+      - uses: actions/download-artifact@v8
+      - uses: softprops/action-gh-release@v3
         with:
           files: hermit-*/hermit-*
           body: ${{ steps.git-cliff.outputs.content }}
